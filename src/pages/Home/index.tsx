@@ -1,10 +1,36 @@
 import { Play } from 'phosphor-react';
 import { CountdownContainer, FormContainer, HomeContainer, MinutesAmountInput, Separator, StartCountdownButton, TaskInput } from './styles';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+
+const newCycleFormValidationSchema = z.object({
+    task: z.string().min(1, 'Informe a tarefa'),
+    minutesAmount: z.number().min(5,'O ciclo precisa ser de no mínimo 05 minutos').max(60, 'O ciclo precisa ser de no máximo 60 minutos')
+});
+
+type NewCycleFormData = z.infer<typeof newCycleFormValidationSchema>;
 
 export function Home () {
+    const { register, handleSubmit, watch, reset } = useForm<NewCycleFormData>({
+        resolver: zodResolver(newCycleFormValidationSchema),
+        defaultValues: {
+            minutesAmount: 0,
+            task: ''
+        }
+    });
+
+    const task = watch('task');
+    const isSubmitDisabled = !task;
+
+    function handleCreateNewCycle(data: NewCycleFormData) {
+        reset();
+        console.log(data);
+    }
+
     return (
         <HomeContainer>
-            <form action="">
+            <form onSubmit={handleSubmit(handleCreateNewCycle)} action="">
                 <FormContainer>
                     <label htmlFor="task">Vou trabalhar em</label>
                     
@@ -13,6 +39,7 @@ export function Home () {
                         list="task-suggestions" 
                         id="task" 
                         placeholder='Dê um nome para o seu projeto'
+                        {...register('task')}
                     />
 
                     <datalist id="task-suggestions">
@@ -29,6 +56,7 @@ export function Home () {
                         step={5}    
                         min={5}
                         max={60}
+                        {...register('minutesAmount', { valueAsNumber:true })}
                     />
 
                     <span>minutos.</span>
@@ -42,7 +70,7 @@ export function Home () {
                     <span>0</span>
                 </CountdownContainer>
 
-                <StartCountdownButton type="submit">
+                <StartCountdownButton disabled={isSubmitDisabled} type="submit">
                     <Play size={24}/>
                         Começar
                 </StartCountdownButton>
