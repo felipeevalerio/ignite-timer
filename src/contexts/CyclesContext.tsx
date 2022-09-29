@@ -15,6 +15,7 @@ interface Cycle {
 }
 
 interface ICyclesContext {
+    cycles: Cycle[];
     activeCycle: Cycle | undefined;
     activeCycleId: string | null;
     amountSecondsPassed: number;
@@ -89,7 +90,7 @@ export function CyclesContextProvider({ children } : CyclesContextProviderProps)
 
 
     return (
-        <CyclesContext.Provider value={{ activeCycle, activeCycleId, markCurrentCycleAsFinished, amountSecondsPassed, setSecondsPassed, createNewCycle, interruptCurrentCycle }}>
+        <CyclesContext.Provider value={{ cycles, activeCycle, activeCycleId, markCurrentCycleAsFinished, amountSecondsPassed, setSecondsPassed, createNewCycle, interruptCurrentCycle }}>
             {children}
         </CyclesContext.Provider>
     );
